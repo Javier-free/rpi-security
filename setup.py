@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name = 'rpi-security',
-    version = '1.4',
+    version = '1.5',
     author = 'Max Williams',
     author_email = 'futuresharks@gmail.com',
     url = 'https://github.com/FutureSharks/rpi-security',

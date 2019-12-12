@@ -175,7 +175,7 @@ class RpisCamera(object):
             if countour_area < motion_detection_threshold:
                 continue
 
-            logger.debug("Motion detected! Motion level is {0} (threshold is {1})".format(countour_area, motion_detection_threshold))
+            logger.debug("Motion detected! Motion level is {0} (threshold {1}, brightness_level {2})".format(countour_area, motion_detection_threshold, brightness_level))
             # Motion detected because there is a contour that is larger than the specified self.motion_detection_threshold
             # compute the bounding box for the contour, draw it on the frame,
             (x, y, w, h) = cv2.boundingRect(c)

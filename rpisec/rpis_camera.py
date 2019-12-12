@@ -15,6 +15,7 @@ from threading import Lock, Event
 from queue import Queue
 from .exit_clean import exit_error
 from datetime import datetime
+from fractions import Fraction
 
 
 logger = logging.getLogger()
@@ -137,7 +138,6 @@ class RpisCamera(object):
         frame = cv2.resize(frame, dim, cv2.INTER_AREA) # We resize the frame
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # We apply a black & white filter
         gray = cv2.GaussianBlur(gray, (21, 21), 0) # Then we blur the picture
-        brightness_level = cv2.mean(gray)[0]
 
         # if the first frame is None, initialize it because there is no frame for comparing the current one with a previous one
         if past_frame is None:
@@ -150,6 +150,10 @@ class RpisCamera(object):
         if h_past_frame != h_current_frame or w_past_frame != w_current_frame: # This shouldnt occur but this is error handling
             logger.error('Past frame and current frame do not have the same sizes {0} {1} {2} {3}'.format(h_past_frame, w_past_frame, h_current_frame, w_current_frame))
             return
+
+        # Detect when too dark to reduce false alarms
+        if self.camera.digital_gain == Fraction(187/128) and self.camera.analog_gain == Fraction(8):
+            return None
 
         # compute the absolute difference between the current frame and first frame
         frame_detla = cv2.absdiff(past_frame, gray)
@@ -166,16 +170,10 @@ class RpisCamera(object):
             # if the contour is too small, ignore it
             countour_area = cv2.contourArea(c)
 
-            # Increase threshold when it's dark to stop false alarms
-            if brightness_level < 3:
-                motion_detection_threshold = self.motion_detection_threshold * 3
-            else:
-                motion_detection_threshold = self.motion_detection_threshold
-
-            if countour_area < motion_detection_threshold:
+            if countour_area < self.motion_detection_threshold:
                 continue
 
-            logger.debug("Motion detected! Motion level is {0} (threshold {1}, brightness_level {2})".format(countour_area, motion_detection_threshold, brightness_level))
+            logger.debug("Motion detected! Motion level is {0}, threshold is {1}".format(countour_area, self.motion_detection_threshold))
             # Motion detected because there is a contour that is larger than the specified self.motion_detection_threshold
             # compute the bounding box for the contour, draw it on the frame,
             (x, y, w, h) = cv2.boundingRect(c)

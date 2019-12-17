@@ -9,6 +9,7 @@ import time
 import cv2
 from picamera.array import PiMotionAnalysis
 from picamera import PiCamera
+from picamera import PiCameraRuntimeError
 import numpy as np
 from PIL import Image
 from threading import Lock, Event

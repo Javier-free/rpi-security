@@ -93,13 +93,13 @@ Install required packages:
 
 ```console
 sudo apt update
-sudo apt install -y libhdf5-100 libharfbuzz0b libwebp6 libjasper1 libilmbase12 libopenexr22 libgstreamer1.0-0 libavcodec-extra57 libavformat57 libswscale4 libgtk-3-0 libqtgui4 libqt4-test libatlas-base-dev tcpdump iw python3-dev python3-pip libjpeg8-dev zlib1g-dev libffi-dev python3-numpy libopenjp2-7-dev libtiff5
+sudo apt install -y libhdf5-103 libharfbuzz0b libwebp6 libjasper1 libopenexr23 libgstreamer1.0-0 libatlas-base-dev libgtk-3-0 libqtgui4 libqt4-test libilmbase23 libavcodec-extra58 libavformat58 libswscale5 tcpdump iw python3-dev python3-pip libjpeg8-dev zlib1g-dev libffi-dev python3-numpy libopenjp2-7-dev libtiff5
 ```
 
 Install open-cv and rpi-security:
 
 ```console
-sudo pip3 install opencv-contrib-python opencv-contrib-python-headless
+sudo pip3 install pip3 install opencv-contrib-python==4.1.0.25 opencv-contrib-python-headless==4.1.0.25
 sudo pip3 install --no-binary :all: https://github.com/FutureSharks/rpi-security/archive/1.5.zip
 ```
 

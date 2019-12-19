@@ -93,13 +93,13 @@ Install required packages:
 
 ```console
 sudo apt update
-sudo apt install -y libhdf5-100 libharfbuzz0b libwebp6 libjasper1 libilmbase12 libopenexr22 libgstreamer1.0-0 libavcodec-extra57 libavformat57 libswscale4 libgtk-3-0 libqtgui4 libqt4-test libatlas-base-dev tcpdump iw python3-dev python3-pip libjpeg8-dev zlib1g-dev libffi-dev python3-numpy libopenjp2-7-dev libtiff5
+sudo apt install -y libhdf5-103 libharfbuzz0b libwebp6 libjasper1 libopenexr23 libgstreamer1.0-0 libatlas-base-dev libgtk-3-0 libqtgui4 libqt4-test libilmbase23 libavcodec-extra58 libavformat58 libswscale5 tcpdump iw python3-dev python3-pip libjpeg8-dev zlib1g-dev libffi-dev python3-numpy libopenjp2-7-dev libtiff5
 ```
 
 Install open-cv and rpi-security:
 
 ```console
-sudo pip3 install opencv-contrib-python opencv-contrib-python-headless
+sudo pip3 install pip3 install opencv-contrib-python==4.1.0.25 opencv-contrib-python-headless==4.1.0.25
 sudo pip3 install --no-binary :all: https://github.com/FutureSharks/rpi-security/archive/1.5.zip
 ```
 
@@ -185,16 +185,17 @@ phy#1
 	Interface mon0
 		ifindex 4
 		wdev 0x100000002
-		addr 00:0f:60:08:9c:01
+		addr 00:0e:8e:58:d6:af
 		type monitor
-		txpower 20.00 dBm
+		txpower 26.00 dBm
 	Interface wlan1
 		ifindex 3
 		wdev 0x100000001
-		addr 00:0f:60:08:9c:01
+		addr 00:0e:8e:58:d6:af
+		ssid Connecting...
 		type managed
-		channel 1 (2412 MHz), width: 20 MHz, center1: 2412 MHz
-		txpower 20.00 dBm
+		channel 124 (5620 MHz), width: 40 MHz, center1: 5630 MHz
+		txpower 26.00 dBm
 phy#0
 	Interface wlan0
 		ifindex 2

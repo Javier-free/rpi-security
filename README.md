@@ -89,6 +89,8 @@ The application uses multithreading in order to process events asynchronously. T
 
 First ensure your WiFi is [set up correctly](#WiFi-adapter-arrangement)
 
+Ensure your GPU/memory split gives 128MB to the GPU. You can see or set this value with `raspi-config`.
+
 Install required packages:
 
 ```console

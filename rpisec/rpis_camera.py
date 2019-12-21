@@ -48,7 +48,6 @@ class RpisCamera(object):
             self.camera = PiCamera()
             self.camera.vflip = self.camera_vflip
             self.camera.hflip = self.camera_hflip
-            self.camera.awb_mode = 'off'
         except Exception as e:
             exit_error('Camera module failed to intialise with error {0}'.format(repr(e)))
 
@@ -59,7 +58,6 @@ class RpisCamera(object):
         timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
         photo = '{0}/rpi-security-{1}{2}.jpeg'.format(self.camera_save_path, timestamp, filename_extra_suffix)
         try:
-            self.camera.resolution = self.photo_size
             with self.lock:
                 while self.camera.recording:
                     time.sleep(0.1)

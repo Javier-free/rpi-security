@@ -101,7 +101,7 @@ sudo apt install -y libhdf5-103 libharfbuzz0b libwebp6 libjasper1 libopenexr23 l
 Install open-cv and rpi-security:
 
 ```console
-sudo pip3 install pip3 install opencv-contrib-python==4.1.0.25 opencv-contrib-python-headless==4.1.0.25
+sudo pip3 install opencv-contrib-python==4.1.0.25 opencv-contrib-python-headless==4.1.0.25
 sudo pip3 install --no-binary :all: https://github.com/FutureSharks/rpi-security/archive/1.5.zip
 ```
 

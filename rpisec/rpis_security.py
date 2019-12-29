@@ -63,7 +63,7 @@ class RpisSecurity(object):
         result = None
         try:
             with open(self.data_file, 'r') as stream:
-                result = yaml.load(stream) or {}
+                result = yaml.load(stream, Loader=yaml.FullLoader)
         except Exception as e:
             logger.error('Failed to read data file {0}: {1}'.format(self.data_file, repr(e)))
         else:

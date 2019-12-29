@@ -32,8 +32,8 @@ setup(
         'pyyaml',
         'scapy==2.4.3',
         'Pillow==6.2.1',
-        'opencv-contrib-python',
-        'opencv-contrib-python-headless',
+        'opencv-contrib-python==3.4.6.27',
+        'opencv-contrib-python-headless==3.4.6.27',
     ],
     classifiers = [
         'Environment :: Console',

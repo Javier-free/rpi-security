@@ -164,6 +164,10 @@ class RpisCamera(object):
         cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if imutils.is_cv2() else cnts[1]
 
+        if not cnts:
+            logger.error("No motion contours returned")
+            return None
+
         # loop over the contours
         for c in cnts:
             # if the contour is too small, ignore it

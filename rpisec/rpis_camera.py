@@ -43,6 +43,8 @@ class RpisCamera(object):
         self.camera_save_path = '/var/tmp'
         self.camera_capture_length = camera_capture_length
         self.camera_mode = camera_mode
+        self.motion_detection_running = False
+        self.too_dark_message_printed = False
 
         try:
             self.camera = PiCamera()
@@ -61,6 +63,7 @@ class RpisCamera(object):
             with self.lock:
                 while self.camera.recording:
                     time.sleep(0.1)
+                time.sleep(1)
                 self.camera.resolution = self.photo_size
                 self.camera.capture(photo, use_video_port=False)
         except PiCameraRuntimeError as e:
@@ -79,11 +82,11 @@ class RpisCamera(object):
         temp_jpeg_path = '{0}/rpi-security-{1}-gif-part'.format(self.temp_directory, timestamp)
         jpeg_files = ['{0}-{1}.jpg'.format(temp_jpeg_path, i) for i in range(self.camera_capture_length*3)]
         try:
-            self.camera.resolution = self.gif_size
             for jpeg in jpeg_files:
                 with self.lock:
                     while self.camera.recording:
                         time.sleep(0.1)
+                    time.sleep(1)
                     self.camera.resolution = self.gif_size
                     self.camera.capture(jpeg)
             im=Image.open(jpeg_files[0])
@@ -112,10 +115,12 @@ class RpisCamera(object):
 
     def start_motion_detection(self, rpis):
         past_frame = None
-        logger.debug("Starting motion detection")
-        self.camera.resolution = self.motion_size
         while not self.lock.locked() and rpis.state.current == 'armed':
+            if not self.motion_detection_running:
+                logger.debug("Starting motion detection")
+                self.motion_detection_running = True
             stream = io.BytesIO()
+            self.camera.resolution = self.motion_size
             self.camera.capture(stream, format='jpeg', use_video_port=False)
             data = np.fromstring(stream.getvalue(), dtype=np.uint8)
             frame = cv2.imdecode(data, 1)
@@ -126,7 +131,7 @@ class RpisCamera(object):
             else:
                 logger.error("No more frame")
             rpis.state.check()
-            time.sleep(0.3)
+            time.sleep(0.2)
         else:
             self.stop_motion_detection()
 
@@ -152,21 +157,22 @@ class RpisCamera(object):
 
         # Detect when too dark to reduce false alarms
         if self.camera.digital_gain == Fraction(187/128) and self.camera.analog_gain == Fraction(8):
+            if not self.too_dark_message_printed:
+                logger.info("Too dark to run motion detection")
+                self.too_dark_message_printed = True
             return None
+        else:
+            self.too_dark_message_printed = False
 
         # compute the absolute difference between the current frame and first frame
-        frame_detla = cv2.absdiff(past_frame, gray)
+        frame_delta = cv2.absdiff(past_frame, gray)
         # then apply a threshold to remove camera motion and other false positives (like light changes)
-        thresh = cv2.threshold(frame_detla, 50, 255, cv2.THRESH_BINARY)[1]
+        thresh = cv2.threshold(frame_delta, 50, 255, cv2.THRESH_BINARY)[1]
 
         # dilate the thresholded image to fill in holes, then find contours on thresholded image
         thresh = cv2.dilate(thresh, None, iterations=2)
         cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if imutils.is_cv2() else cnts[1]
-
-        if not cnts:
-            logger.error("No motion contours returned")
-            return None
 
         # loop over the contours
         for c in cnts:
@@ -176,16 +182,16 @@ class RpisCamera(object):
             if countour_area < self.motion_detection_threshold:
                 continue
 
-            logger.debug("Motion detected! Motion level is {0}, threshold is {1}".format(countour_area, self.motion_detection_threshold))
+            logger.info("Motion detected! Motion level is {0}, threshold is {1}".format(countour_area, self.motion_detection_threshold))
             # Motion detected because there is a contour that is larger than the specified self.motion_detection_threshold
             # compute the bounding box for the contour, draw it on the frame,
             (x, y, w, h) = cv2.boundingRect(c)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            self.handle_motion_detected(frame, gray, frame_detla, thresh)
+            self.handle_motion_detected(frame)
 
         return None
 
-    def handle_motion_detected(self, frame, gray, frame_detla, thresh):
+    def handle_motion_detected(self, frame):
         timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
         bounding_box_path = '{0}/rpi-security-{1}-box.jpeg'.format(self.camera_save_path, timestamp)
         cv2.imwrite(bounding_box_path, frame)
@@ -195,10 +201,12 @@ class RpisCamera(object):
 
     def stop_motion_detection(self):
         try:
+            if self.motion_detection_running:
+                logger.debug("Stopping motion detection")
+                self.motion_detection_running = False
             if not self.camera.recording:
                 return
             else:
-                logger.debug("Stopping motion detection")
                 self.camera.stop_recording()
         except Exception as e:
             logger.error('Error in stop_motion_detection: {0}'.format(repr(e)))

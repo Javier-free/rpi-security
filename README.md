@@ -104,6 +104,15 @@ Install required packages for OpenCV:
 sudo apt install -y libhdf5-103 libharfbuzz0b libwebp6 libjasper1 libopenexr23 libgstreamer1.0-0 libatlas-base-dev libgtk-3-0 libqtgui4 libqt4-test libilmbase23 libavcodec-extra58 libavformat58 libswscale5  libjpeg8-dev zlib1g-dev libffi-dev libopenjp2-7-dev libtiff5
 ```
 
+Instalar kamene desde https://github.com/phaethon/kamene
+Primero se clona el paquete y luego se instala
+
+```console
+sudo git clone https://github.com/phaethon/kamene.git
+cd kamene
+sudo python3 setup.py install
+````
+
 Install OpenCV and rpi-security:
 
 ```console

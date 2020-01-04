@@ -108,7 +108,7 @@ Install OpenCV and rpi-security:
 
 ```console
 sudo pip3 install opencv-contrib-python==3.4.6.27 opencv-contrib-python-headless==3.4.6.27
-sudo pip3 install --no-binary :all: https://github.com/FutureSharks/rpi-security/archive/1.5.zip
+sudo pip3 install --no-binary :all: https://github.com/FutureSharks/rpi-security/archive/1.4.zip
 ```
 
 Reload systemd configuration and enable the service:
